@@ -17,10 +17,6 @@ class M_Auth extends CI_Model
 		$result = curl_exec($curl);
 		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
 
-		if ($httpcode != 200) {
-			return false;
-		}
-
 		curl_close($curl);
 
 		return json_decode($result);
@@ -39,10 +35,6 @@ class M_Auth extends CI_Model
 
 		$result = curl_exec($curl);
 		$httpcode = curl_getinfo($curl, CURLINFO_HTTP_CODE);
-
-		if ($httpcode != 200) {
-			return false;
-		}
 
 		curl_close($curl);
 
