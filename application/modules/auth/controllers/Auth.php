@@ -52,15 +52,18 @@ class Auth extends CI_Controller
 
 		$response = $this->auth->login($data);
 
-		if ($response->status === 'success') {
+		if (isset($response->status) && $response->status === 'success') {
 			$data = [
 				'user_id' => $response->user->id,
 				'name' => $response->user->name,
 			];
 			set_session($data);
 			redirect('dashboard');
+		} else if (isset($response->status) && $response->status === 'fail') {
+			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">' . $response->message . '</div>');
+			redirect('login');
 		} else {
-			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Invalid Login! Bad Request</div>');
+			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Invalid email or password</div>');
 			redirect('login');
 		}
 	}
@@ -108,12 +111,14 @@ class Auth extends CI_Controller
 			];
 
 			$response = $this->auth->register($data);
-
-			if ($response->status === 'success') {
-				$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Your account has been successfully created</div>');
+			if (isset($response->status) && $response->status === 'success') {
+				$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">' . $response->message . '</div>');
 				redirect('login');
+			} else if (isset($response->status) && $response->status === 'fail') {
+				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">' . $response->message . '</div>');
+				redirect('signup');
 			} else {
-				$this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">Failed to create an account</div>');
+				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Invalid Bad Request!</div>');
 				redirect('signup');
 			}
 		}
