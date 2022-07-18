@@ -63,7 +63,7 @@ class Auth extends CI_Controller
 			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">' . $response->message . '</div>');
 			redirect('login');
 		} else {
-			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Invalid email or password</div>');
+			$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Invalid Bad Request</div>');
 			redirect('login');
 		}
 	}
