@@ -35,21 +35,30 @@
 									<?= form_open('location/add', ['id' => 'location-form', 'method' => 'POST', 'novalidate' => '']); ?>
 									<div class="form-group">
 										<label for="lat">Latitude <span class="text-danger">*</span></label>
-										<input type="text" name="lat" id="lat" class="form-control decimal" value="<?= set_value('lat'); ?>" required>
+										<input type="text" name="lat" id="lat" class="form-control decimal <?php if (form_error('lat')) : ?>is-invalid<?php endif ?>" value="<?= $_GET['lat'] ?? set_value('lat'); ?>" required>
+										<?php if (form_error('lat')) : ?>
+											<?= form_error('lat', '<div class="invalid-feedback">', '</div>') ?>
+										<?php endif ?>
 									</div>
 
 									<div class="form-group">
 										<label for="lon">Longitude <span class="text-danger">*</span></label>
-										<input type="text" name="lon" id="lon" class="form-control decimal" value="<?= set_value('lon'); ?>" required>
+										<input type="text" name="lon" id="lon" class="form-control decimal <?php if (form_error('lon')) : ?>is-invalid<?php endif ?>" value="<?= $_GET['lon'] ?? set_value('lon'); ?>" required>
+										<?php if (form_error('lon')) : ?>
+											<?= form_error('lon', '<div class="invalid-feedback">', '</div>') ?>
+										<?php endif ?>
 									</div>
 
 									<div class="form-group">
-										<label for="exclude">Exclude <span class="text-danger">*</span></label>
-										<select name="exclude" id="exclude" class="form-control" required>
+										<label for="exclude">Include <span class="text-danger">*</span></label>
+										<select name="exclude" id="exclude" class="form-control <?php if (form_error('exclude')) : ?>is-invalid<?php endif ?>" required>
 											<option value="hourly,daily">Current</option>
 											<option value="current,daily">Hourly</option>
 											<option value="current,hourly">Daily</option>
 										</select>
+										<?php if (form_error('exclude')) : ?>
+											<?= form_error('exclude', '<div class="invalid-feedback">', '</div>') ?>
+										<?php endif ?>
 									</div>
 
 									<div class="d-flex justify-content-end mt-4">
