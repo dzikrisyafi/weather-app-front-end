@@ -61,10 +61,10 @@ class Location extends CI_Controller
 				redirect('location');
 			} else if (isset($response->status) && $response->status === 'fail') {
 				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">' . $response->message . '</div>');
-				redirect('location');
+				redirect('location/add');
 			} else {
 				$this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">Invalid Bad Request!</div>');
-				redirect('location');
+				redirect('location/add');
 			}
 		}
 	}
