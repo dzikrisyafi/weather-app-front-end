@@ -20,7 +20,7 @@
 
 		<div class="content">
 			<div class="container-fluid">
-				<div id="locations" class="mb-lg-4 mb-1">
+				<div id="products" class="mb-lg-4 mb-1">
 
 					<?= $this->session->flashdata('message') ?>
 
