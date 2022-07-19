@@ -24,14 +24,10 @@
 						Today Overviews
 					</h4>
 
-					<p class="text-gray-400 text-sm fw-normal mb-1">Latitude: <?= $lat; ?>, Longitude: <?= $lon; ?></p>
+					<p class="text-gray-400 text-sm fw-normal mb-1">Latitude: <span id="lat"></span>, Longitude: <span id="lon"></span></p>
 
-					<p class="text-gray-400 text-sm fw-normal mb-4">
-						<?php if (isset($current_weather->timezone)) : ?>
-							Timezone: <?= $current_weather->timezone; ?>
-						<?php else : ?>
-							Your location is not available! <a href="<?= base_url('location/add'); ?>" target="_blank">Add location</a>
-						<?php endif; ?>
+					<p id="timezone" class="text-gray-400 text-sm fw-normal mb-4">
+
 					</p>
 
 
@@ -40,7 +36,8 @@
 							<div class="card border-0 mb-lg-0 mb-3">
 								<div class="card-body">
 									<img src="<?= base_url('assets/img/icons/bx-water.svg') ?>" alt="pressure">
-									<h4 class="text-black"><?= $current_weather->pressure ?? 0; ?></h4>
+									<!-- <h4 class="text-black"><?= $current_weather->pressure ?? 0; ?></h4> -->
+									<h4 id="pressure" class="text-black"></h4>
 									<p class="text-left text-sm text-gray-500">Pressure</p>
 								</div>
 							</div>
@@ -49,7 +46,8 @@
 							<div class="card border-0 mb-lg-0 mb-3">
 								<div class="card-body">
 									<img src="<?= base_url('assets/img/icons/bx-cloud.svg') ?>" alt="humidity">
-									<h4 class="text-black"><?= $current_weather->humidity ?? 0; ?></h4>
+									<!-- <h4 class="text-black"><?= $current_weather->humidity ?? 0; ?></h4> -->
+									<h4 id="humidity" class="text-black"></h4>
 									<p class="text-left text-sm text-gray-500">Humidity</p>
 								</div>
 							</div>
@@ -58,7 +56,8 @@
 							<div class="card border-0 mb-lg-0 mb-3">
 								<div class="card-body">
 									<img src="<?= base_url('assets/img/icons/bx-wind.svg') ?>" alt="windspeed">
-									<h4 class="text-black"><?= $current_weather->wind_speed ?? 0; ?></h4>
+									<!-- <h4 class="text-black"><?= $current_weather->wind_speed ?? 0; ?></h4> -->
+									<h4 id="wind_speed" class="text-black"></h4>
 									<p class="text-left text-sm text-gray-500">Wind Speed</p>
 								</div>
 							</div>
@@ -97,15 +96,7 @@
 														</tr>
 													</thead>
 													<tbody>
-														<?php if ($hourly_weather) : ?>
-															<?php foreach ($hourly_weather as $weather) : ?>
-																<tr>
-																	<td><?= $weather->weather->id ?? ''; ?></td>
-																	<td><?= $weather->weather->main ?? ''; ?></td>
-																	<td><?= $weather->weather->description ?? ''; ?></td>
-																</tr>
-															<?php endforeach; ?>
-														<?php endif; ?>
+
 													</tbody>
 												</table>
 											</div>
@@ -129,21 +120,11 @@
 														</tr>
 													</thead>
 													<tbody>
-														<?php if ($daily_weather) : ?>
-															<?php foreach ($daily_weather as $weather) : ?>
-																<tr>
-																	<td><?= $weather->weather->id ?? ''; ?></td>
-																	<td><?= $weather->weather->main ?? ''; ?></td>
-																	<td><?= $weather->weather->description ?? ''; ?></td>
-																</tr>
-															<?php endforeach; ?>
-														<?php endif; ?>
 													</tbody>
 												</table>
 											</div>
 										</div>
 									</div>
-
 								</div>
 							</div>
 						</div>
@@ -158,14 +139,125 @@
 	<script src="<?= base_url('assets/libs/datatables/jquery.dataTables.min.js') ?>"></script>
 	<script src="<?= base_url('assets/libs/datatables/dataTables.bootstrap4.min.js') ?>"></script>
 
-
-	<script>
+	<script type="text/javascript">
 		$(document).ready(() => {
 			"use strict";
 
-			let dt_hourly_weather = $("#dt-hourly-weather").DataTable();
-			let dt_daily_weather = $("#dt-daily-weather").DataTable();
+			initGeolocation();
+
+			$.ajax({
+				url: base_url('dashboard/get_current_weather'),
+				method: 'GET',
+				dataType: 'JSON',
+				data: {
+					lat: localStorage.getItem('lat'),
+					lon: localStorage.getItem('lon')
+				},
+				success: function(data) {
+					if (data) {
+						$("#timezone").html('Timezone: ' + data.timezone);
+						$("#pressure").html(data.pressure);
+						$("#humidity").html(data.humidity);
+						$("#wind_speed").html(data.wind_speed);
+					} else {
+						$("#timezone").html('Your location is not available, <a href="' + base_url('location/add') + '?lat=' + localStorage.getItem('lat') + '&lon=' + localStorage.getItem('lon') + '" target="_blank">Add location</a>');
+						$("#pressure").html(0);
+						$("#humidity").html(0);
+						$("#wind_speed").html(0);
+					}
+				}
+			});
+
+			let dt_hourly_weather = $("#dt-hourly-weather");
+
+			dt_hourly_weather.DataTable({
+				processing: true,
+				ordering: true,
+				paging: true,
+				info: true,
+				filter: true,
+
+				ajax: {
+					url: base_url('dashboard/get_hourly_weather'),
+					type: 'POST',
+					data: function(d) {
+						d.lat = localStorage.getItem('lat');
+						d.lon = localStorage.getItem('lon');
+					},
+				},
+
+				columns: [{
+						"data": "id",
+					},
+					{
+						"data": "main",
+					},
+					{
+						"data": "description",
+					},
+				],
+			});
+
+			let dt_daily_weather = $("#dt-daily-weather");
+
+			dt_daily_weather.DataTable({
+				processing: true,
+				ordering: true,
+				paging: true,
+				info: true,
+				filter: true,
+
+				ajax: {
+					url: base_url('dashboard/get_daily_weather'),
+					type: 'POST',
+					data: function(d) {
+						d.lat = localStorage.getItem('lat');
+						d.lon = localStorage.getItem('lon');
+					},
+				},
+
+				columns: [{
+						"data": "id",
+					},
+					{
+						"data": "main",
+					},
+					{
+						"data": "description",
+					},
+				],
+			});
 		});
+
+		function initGeolocation() {
+			if (navigator.geolocation) {
+				navigator.geolocation.getCurrentPosition(setPosition, locationError);
+			} else {
+				alert('Geolocation is not supported by this browser');
+			}
+		}
+
+		function setPosition(position) {
+			$("#lat").html(position.coords.latitude);
+			$("#lon").html(position.coords.longitude);
+
+			localStorage.setItem('lat', position.coords.latitude);
+			localStorage.setItem('lon', position.coords.longitude);
+		}
+
+		function locationError(error) {
+			console.error(error);
+		}
+
+		function base_url(param) {
+			var pathparts = location.pathname.split('/');
+			if (location.host == 'localhost' || location.host == '127.0.0.1') {
+				var url = location.origin + '/' + pathparts[1].trim('/') + '/';
+			} else {
+				var url = location.origin + '/';
+			}
+			return param ? url + param : url;
+		}
 	</script>
 </body>
 
