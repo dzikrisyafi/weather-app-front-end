@@ -432,11 +432,6 @@ body {
 		pointer-events: none;
 	}
 
-	.nav.nav__open .nav-item.active::before {
-		height: 0px;
-		width: 0rem;
-	}
-
 	.content {
 		margin-top: 50px;
 	}
