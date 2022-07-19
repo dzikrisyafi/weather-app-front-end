@@ -40,7 +40,7 @@ class Location extends CI_Controller
 			],
 			[
 				'field' => 'exclude',
-				'name' => 'Exclude',
+				'name' => 'Include',
 				'rules' => 'required|trim'
 			]
 		];
