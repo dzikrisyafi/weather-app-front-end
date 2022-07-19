@@ -13,6 +13,9 @@
 		<div class="content">
 			<div class="container-fluid">
 				<div id="location" class="mb-lg-4 mb-1">
+
+					<?= $this->session->flashdata('message') ?>
+
 					<div class="d-flex justify-content-between align-items-start">
 						<div>
 							<h4 class="text-black font-semibold mb-1">
